@@ -10,18 +10,28 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
 scene.onOverlapTile(SpriteKind.Enemy, assets.tile`myTile`, function (sprite, location) {
     tiles.setCurrentTilemap(tilemap`level2`)
 })
-function SelMap (bool: boolean) {
+function randommap () {
     if (Map == 0) {
-        tiles.setCurrentTilemap(tilemap`level2`)
+        tiles.setCurrentTilemap(tilemap`level19`)
     }
     if (Map == 1) {
-        tiles.setCurrentTilemap(tilemap`level3`)
+        tiles.setCurrentTilemap(tilemap`level19`)
+    }
+    if (Map == 2) {
+        tiles.setCurrentTilemap(tilemap`level19`)
+    }
+    if (Map == 3) {
+        tiles.setCurrentTilemap(tilemap`level19`)
+    }
+    if (Map == 4) {
+        tiles.setCurrentTilemap(tilemap`level19`)
     }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     pause(5000)
     info.changeLifeBy(-1)
 })
+let PlayerLocatation: tiles.Location[] = []
 let Map = 0
 let mySprite: Sprite = null
 let myEnemy = sprites.create(img`
@@ -44,9 +54,19 @@ let myEnemy = sprites.create(img`
     `, SpriteKind.Enemy)
 mySprite = Render.getRenderSpriteVariable()
 Render.moveWithController(4, 4, 1)
-Map = game.askForNumber("Choose Map", 1)
-SelMap(true)
+Map = [
+0,
+1,
+2,
+3,
+4
+]._pickRandom()
+randommap()
+tiles.placeOnRandomTile(mySprite, assets.tile`myTile1`)
 info.setLife(4)
 pause(5000)
-myEnemy.follow(mySprite, 55)
-mySprite.setBounceOnWall(true)
+forever(function () {
+    PlayerLocatation = scene.aStar(myEnemy.tilemapLocation(), mySprite.tilemapLocation())
+    scene.followPath(myEnemy, PlayerLocatation, 100)
+    pause(500)
+})
